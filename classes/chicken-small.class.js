@@ -1,0 +1,23 @@
+/**
+ * A small chicken enemy. Smaller and faster than the normal Chicken,
+ * but uses the exact same walking/dying logic from its parent class.
+ */
+class ChickenSmall extends Chicken {
+    width = 50;
+    height = 50;
+    y = 370;
+
+    /**
+     * @param {number} x - Starting position inside the level.
+     */
+    constructor(x) {
+        let walkingImages = [
+            "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
+            "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
+            "img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
+        ];
+        let deadImage = "img/3_enemies_chicken/chicken_small/2_dead/dead.png";
+        super(x, walkingImages, deadImage);
+        this.speed = 0.3 + Math.random() * 0.3;
+    }
+}
