@@ -57,6 +57,38 @@ function buildEnemies() {
     ];
 }
 
+/**
+ * Creates the collectible coins spread across the level.
+ * @returns {Coin[]} The coin objects of the level.
+ */
+function buildCoins() {
+    return [
+        new Coin(300, 300),
+        new Coin(650, 250),
+        new Coin(1000, 300),
+        new Coin(1700, 280),
+        new Coin(2400, 300),
+    ];
+}
+
+/**
+ * Creates the five collectible bottles spread across the level.
+ * The last two are placed just before the boss so the player
+ * always has a small reserve for the final fight.
+ * @returns {Bottle[]} The bottle objects of the level.
+ */
+function buildBottles() {
+    return [
+        new Bottle(500, 360),
+        new Bottle(1200, 360),
+        new Bottle(1900, 360),
+        new Bottle(2550, 360),
+        new Bottle(2700, 360),
+    ];
+}
+
 let level1_backgroundObjects = buildBackgroundObjects();
 let level1_clouds = buildClouds();
 let level1_enemies = buildEnemies();
+let level1_coins = buildCoins();
+let level1_bottles = buildBottles();

@@ -23,6 +23,7 @@ function setKeyboardState(key, isPressed) {
     if (key === "ArrowUp") keyboard.up = isPressed;
     if (key === "ArrowDown") keyboard.down = isPressed;
     if (key === " ") keyboard.space = isPressed;
+    if (key === "d" || key === "D") keyboard.throw = isPressed;
 }
 
 /**
