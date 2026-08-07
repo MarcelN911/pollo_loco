@@ -21,8 +21,15 @@ class Cloud extends MovableObject {
      * Starts the loop that slowly moves the cloud to the left.
      */
     animate() {
-        setInterval(() => {
+        this.moveIntervalId = setInterval(() => {
             this.moveLeft();
         }, 1000 / 60);
+    }
+
+    /**
+     * Stops the movement loop. Called by World when it is torn down.
+     */
+    stop() {
+        clearInterval(this.moveIntervalId);
     }
 }

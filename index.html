@@ -8,9 +8,33 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>El Pollo Loco</h1>
+    <div class="game-container">
+        <div id="start-screen" class="screen">
+            <img src="img/9_intro_outro_screens/start/startscreen_1.png" alt="El Pollo Loco" class="screen-bg">
+            <div class="start-actions">
+                <button id="start-btn" class="game-btn" onclick="startGame()">Start Game</button>
+                <button id="controls-btn" class="game-btn game-btn-secondary" onclick="openControls()">Steuerung</button>
+            </div>
+        </div>
+        <div id="end-screen" class="screen end-screen hidden">
+            <img id="end-badge" src="" alt="" class="end-badge">
+            <div class="start-actions">
+                <button class="game-btn" onclick="restartGame()">Nochmal spielen</button>
+                <button class="game-btn game-btn-secondary" onclick="goHome()">Zum Hauptmenü</button>
+            </div>
+        </div>
+        <canvas id="canvas" width="1220" height="480"></canvas>
+    </div>
 
-    <canvas id="canvas" width="1220" height="480"></canvas>
+    <dialog id="controls-dialog" class="controls-dialog" onclick="handleDialogBackdropClick(event)">
+        <button class="dialog-close" onclick="closeControls()">&times;</button>
+        <h2>Steuerung</h2>
+        <ul class="controls-list">
+            <li><span class="key">&larr; &rarr;</span> Laufen</li>
+            <li><span class="key">&uarr; / Leertaste</span> Springen</li>
+            <li><span class="key">D</span> Flasche werfen</li>
+        </ul>
+    </dialog>
 
     <script src="classes/keyboard.class.js"></script>
     <script src="classes/movable-object.class.js"></script>

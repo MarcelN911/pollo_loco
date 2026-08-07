@@ -3,13 +3,82 @@ let world;
 let keyboard = new Keyboard();
 
 /**
- * Runs once the page has loaded.
- * Gets the canvas element and creates the World,
- * which takes care of drawing and updating the whole game from now on.
+ * Runs once the page has loaded and just grabs the canvas element.
+ * The World is not created yet, the player still sees the start screen.
  */
 function init() {
     canvas = document.getElementById("canvas");
+}
+
+/**
+ * Hides the start screen and creates the World, which takes care of
+ * drawing and updating the whole game from now on.
+ * Called directly from the start button's onclick attribute.
+ */
+function startGame() {
+    document.getElementById("start-screen").classList.add("hidden");
     world = new World(canvas, keyboard);
+    world.onGameEnd = showEndScreen;
+}
+
+/**
+ * Shows the end screen with the matching win or lose graphic.
+ * Called by World itself once the character or the endboss has died.
+ * @param {boolean} won - True if the player defeated the endboss.
+ */
+function showEndScreen(won) {
+    let badge = document.getElementById("end-badge");
+    badge.src = won ? "img/You won, you lost/You won A.png" : "img/You won, you lost/You lost.png";
+    badge.alt = won ? "Gewonnen" : "Verloren";
+    document.getElementById("end-screen").classList.remove("hidden");
+}
+
+/**
+ * Hides the end screen and starts a fresh game with a fresh keyboard
+ * state, so no key that was still held down at death stays stuck.
+ * Called directly from the end screen's restart button.
+ */
+function restartGame() {
+    document.getElementById("end-screen").classList.add("hidden");
+    keyboard = new Keyboard();
+    world = new World(canvas, keyboard);
+    world.onGameEnd = showEndScreen;
+}
+
+/**
+ * Hides the end screen and shows the start screen again.
+ * Called directly from the end screen's home button.
+ */
+function goHome() {
+    document.getElementById("end-screen").classList.add("hidden");
+    document.getElementById("start-screen").classList.remove("hidden");
+}
+
+/**
+ * Opens the dialog that explains the controls.
+ * Called directly from the "Steuerung" button's onclick attribute.
+ */
+function openControls() {
+    document.getElementById("controls-dialog").showModal();
+}
+
+/**
+ * Closes the controls dialog.
+ * Called directly from the dialog's close button.
+ */
+function closeControls() {
+    document.getElementById("controls-dialog").close();
+}
+
+/**
+ * Closes the dialog when the click lands on the backdrop itself,
+ * i.e. next to the dialog content, not inside it.
+ * @param {MouseEvent} event - The click event from the dialog element.
+ */
+function handleDialogBackdropClick(event) {
+    if (event.target === event.currentTarget) {
+        event.currentTarget.close();
+    }
 }
 
 /**

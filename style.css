@@ -25,7 +25,139 @@ h1 {
     margin: 10px 0;
 }
 
+.game-container {
+    position: relative;
+    display: inline-block;
+}
+
 canvas {
     background-color: black;
     border: 3px solid white;
+    display: block;
+}
+
+.screen {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 40px;
+    overflow: hidden;
+    border: 3px solid white;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+.screen-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.game-btn {
+    position: relative;
+    z-index: 1;
+    padding: 14px 36px;
+    font-family: "Boogaloo", sans-serif;
+    font-size: 28px;
+    letter-spacing: 1px;
+    color: white;
+    background-color: #c1272d;
+    border: 3px solid white;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.game-btn:hover {
+    background-color: #e63946;
+}
+
+.start-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 16px;
+}
+
+.game-btn-secondary {
+    background-color: rgba(0, 0, 0, 0.55);
+}
+
+.game-btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.controls-dialog {
+    position: relative;
+    font-family: "Boogaloo", sans-serif;
+    color: white;
+    background-color: #2b1a12;
+    border: 3px solid white;
+    border-radius: 10px;
+    padding: 26px 34px;
+    min-width: 280px;
+}
+
+.controls-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.controls-dialog h2 {
+    margin: 0 0 16px;
+    color: #ffb703;
+}
+
+.dialog-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.controls-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 20px;
+}
+
+.key {
+    display: inline-block;
+    min-width: 130px;
+    padding: 4px 10px;
+    margin-right: 10px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 2px solid white;
+    border-radius: 6px;
+}
+
+.end-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding-bottom: 0;
+    background: linear-gradient(180deg, #2b1a12 0%, #6b3a1f 100%);
+}
+
+.end-badge {
+    max-width: 70%;
+    max-height: 220px;
+    object-fit: contain;
 }

@@ -87,8 +87,3 @@ function buildBottles() {
     ];
 }
 
-let level1_backgroundObjects = buildBackgroundObjects();
-let level1_clouds = buildClouds();
-let level1_enemies = buildEnemies();
-let level1_coins = buildCoins();
-let level1_bottles = buildBottles();

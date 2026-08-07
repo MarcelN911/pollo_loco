@@ -6,18 +6,21 @@
 class World {
     character = new Character();
     endboss = new Endboss(2800);
-    backgroundObjects = level1_backgroundObjects;
-    clouds = level1_clouds;
-    enemies = level1_enemies;
-    coins = level1_coins;
-    bottles = level1_bottles;
+    backgroundObjects = buildBackgroundObjects();
+    clouds = buildClouds();
+    enemies = buildEnemies();
+    coins = buildCoins();
+    bottles = buildBottles();
     throwableObjects = [];
-    maxCoins = level1_coins.length;
+    maxCoins = this.coins.length;
     maxBottles = 7;
     canvas;
     ctx;
     keyboard;
     camera_x = 0;
+    gameEnded = false;
+    isDestroyed = false;
+    onGameEnd = null;
 
     /**
      * @param {HTMLCanvasElement} canvas - The canvas to draw on.
@@ -59,16 +62,65 @@ class World {
      * of collision and keeps the status bars in sync.
      */
     run() {
-        setInterval(() => {
+        this.gameIntervalId = setInterval(() => {
             this.updateCamera();
             this.checkEnemyCollisions();
             this.checkBossCollisions();
             this.checkItemCollisions();
             this.checkThrowableCollisions();
+            this.checkGameOutcome();
             this.cleanupThrowables();
             this.healthBar.setPercentage(this.character.energy);
             this.endbossBar.setPercentage(this.endboss.energy);
         }, 1000 / 60);
+    }
+
+    /**
+     * Ends the game once the character or the endboss has died.
+     * Does nothing if the game has already ended.
+     */
+    checkGameOutcome() {
+        if (this.gameEnded) {
+            return;
+        }
+        if (this.endboss.isDead()) {
+            this.endGame(true);
+        } else if (this.character.isDead()) {
+            this.endGame(false);
+        }
+    }
+
+    /**
+     * Marks the game as finished and waits for the death animation to play
+     * out before tearing the world down and notifying script.js through
+     * the onGameEnd callback, which shows the matching end screen.
+     * @param {boolean} won - True if the player defeated the endboss.
+     */
+    endGame(won) {
+        this.gameEnded = true;
+        setTimeout(() => {
+            this.destroy();
+            if (this.onGameEnd) {
+                this.onGameEnd(won);
+            }
+        }, 2000);
+    }
+
+    /**
+     * Stops every loop owned directly or indirectly by this world, so
+     * nothing keeps running in the background once it is torn down,
+     * e.g. on restart or when returning to the home screen.
+     */
+    destroy() {
+        this.isDestroyed = true;
+        clearInterval(this.gameIntervalId);
+        cancelAnimationFrame(this.animationFrameId);
+        this.character.stop();
+        this.endboss.stop();
+        this.enemies.forEach((enemy) => enemy.stop());
+        this.clouds.forEach((cloud) => cloud.stop());
+        this.coins.forEach((coin) => coin.stop());
+        this.throwableObjects.forEach((bottle) => bottle.stop());
     }
 
     /**
@@ -144,6 +196,7 @@ class World {
             if (index > -1) {
                 this.enemies.splice(index, 1);
             }
+            enemy.stop();
         }, 1000);
     }
 
@@ -184,6 +237,7 @@ class World {
         if (!this.character.isColliding(coin)) {
             return false;
         }
+        coin.stop();
         this.character.coins += 1;
         this.coinBar.setPercentage((this.character.coins / this.maxCoins) * 100);
         return true;
@@ -248,7 +302,11 @@ class World {
      */
     cleanupThrowables() {
         this.throwableObjects = this.throwableObjects.filter((bottle) => {
-            return !(bottle.hasSplashed && bottle.currentImage > bottle.IMAGES_SPLASH.length);
+            let isFinished = bottle.hasSplashed && bottle.currentImage > bottle.IMAGES_SPLASH.length;
+            if (isFinished) {
+                bottle.stop();
+            }
+            return !isFinished;
         });
     }
 
@@ -258,6 +316,9 @@ class World {
      * and finally the status bars that always stay fixed on screen.
      */
     draw() {
+        if (this.isDestroyed) {
+            return;
+        }
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToMap(this.backgroundObjects);
@@ -272,7 +333,7 @@ class World {
         this.drawStatusBars();
 
         let self = this;
-        requestAnimationFrame(function () {
+        this.animationFrameId = requestAnimationFrame(function () {
             self.draw();
         });
     }

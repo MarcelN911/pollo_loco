@@ -75,14 +75,24 @@ class Endboss extends MovableObject {
      * Starts the movement loop and the animation loop.
      */
     animate() {
-        setInterval(() => {
+        this.moveIntervalId = setInterval(() => {
             this.checkActivation();
             this.move();
         }, 1000 / 60);
 
-        setInterval(() => {
+        this.animationIntervalId = setInterval(() => {
             this.playBossAnimation();
         }, 200);
+    }
+
+    /**
+     * Stops every loop owned by this boss. Called by World when it is
+     * torn down, e.g. on restart.
+     */
+    stop() {
+        clearInterval(this.moveIntervalId);
+        clearInterval(this.animationIntervalId);
+        clearInterval(this.attackIntervalId);
     }
 
     /**
@@ -116,7 +126,7 @@ class Endboss extends MovableObject {
      * then returns to the normal walking speed.
      */
     startAttackCycle() {
-        setInterval(() => {
+        this.attackIntervalId = setInterval(() => {
             if (this.isDead() || this.state === "hurt") {
                 return;
             }

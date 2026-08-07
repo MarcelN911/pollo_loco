@@ -104,14 +104,23 @@ class Character extends MovableObject {
      * one for choosing the current animation frame.
      */
     animate() {
-        setInterval(() => {
+        this.movementIntervalId = setInterval(() => {
             this.moveCharacter();
             this.applyGravity();
         }, 1000 / 60);
 
-        setInterval(() => {
+        this.animationIntervalId = setInterval(() => {
             this.playCharacterAnimation();
         }, 100);
+    }
+
+    /**
+     * Stops both loops. Called by World when it is torn down,
+     * e.g. on restart, so the character does not keep running in the background.
+     */
+    stop() {
+        clearInterval(this.movementIntervalId);
+        clearInterval(this.animationIntervalId);
     }
 
     /**

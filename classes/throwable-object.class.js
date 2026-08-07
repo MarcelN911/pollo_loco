@@ -48,13 +48,22 @@ class ThrowableObject extends MovableObject {
      * bottle along its flight path, one that picks the animation frame.
      */
     animate() {
-        setInterval(() => {
+        this.moveIntervalId = setInterval(() => {
             this.updatePosition();
         }, 1000 / 60);
 
-        setInterval(() => {
+        this.animationIntervalId = setInterval(() => {
             this.playCurrentAnimation();
         }, 100);
+    }
+
+    /**
+     * Stops both loops. Called once the splash animation has finished,
+     * or when World is torn down, e.g. on restart.
+     */
+    stop() {
+        clearInterval(this.moveIntervalId);
+        clearInterval(this.animationIntervalId);
     }
 
     /**

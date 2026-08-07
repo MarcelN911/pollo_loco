@@ -26,8 +26,16 @@ class Coin extends MovableObject {
      * Starts the shining animation loop.
      */
     animate() {
-        setInterval(() => {
+        this.animationIntervalId = setInterval(() => {
             this.playAnimation(this.IMAGES_COIN);
         }, 300);
+    }
+
+    /**
+     * Stops the shining animation. Called once this coin is collected,
+     * or when World is torn down, e.g. on restart.
+     */
+    stop() {
+        clearInterval(this.animationIntervalId);
     }
 }

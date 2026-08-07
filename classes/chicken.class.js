@@ -15,7 +15,7 @@ class Chicken extends MovableObject {
     width = 70;
     height = 70;
     isDead = false;
-    offset = { top: 4, left: 4, right: 4, bottom: 4 };
+    offset = { top: 4, left: 2, right: 2, bottom: 7 };
 
     /**
      * @param {number} x - Starting position inside the level.
@@ -37,13 +37,22 @@ class Chicken extends MovableObject {
      * Starts the movement and animation loops for this chicken.
      */
     animate() {
-        setInterval(() => {
+        this.moveIntervalId = setInterval(() => {
             this.moveIfAlive();
         }, 1000 / 60);
 
-        setInterval(() => {
+        this.animationIntervalId = setInterval(() => {
             this.playWalkingAnimationIfAlive();
         }, 200);
+    }
+
+    /**
+     * Stops both loops. Called once this chicken is removed from the
+     * level, or when World is torn down, e.g. on restart.
+     */
+    stop() {
+        clearInterval(this.moveIntervalId);
+        clearInterval(this.animationIntervalId);
     }
 
     /**

@@ -6,6 +6,7 @@ class ChickenSmall extends Chicken {
     width = 50;
     height = 50;
     y = 370;
+    offset = { top: 4, left: 6, right: 6, bottom: 5 };
 
     /**
      * @param {number} x - Starting position inside the level.
