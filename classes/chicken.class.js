@@ -1,16 +1,16 @@
+const CHICKEN_WALKING_IMAGES = [
+    "img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
+    "img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
+    "img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
+];
+const CHICKEN_DEAD_IMAGE = "img/3_enemies_chicken/chicken_normal/2_dead/dead.png";
+
 /**
  * A normal walking chicken enemy.
  * Walks to the left until it gets stomped on by the character,
  * then switches to its dead image and stops moving.
  */
 class Chicken extends MovableObject {
-    static DEFAULT_WALKING_IMAGES = [
-        "img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
-        "img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
-        "img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
-    ];
-    static DEFAULT_DEAD_IMAGE = "img/3_enemies_chicken/chicken_normal/2_dead/dead.png";
-
     y = 350;
     width = 70;
     height = 70;
@@ -25,8 +25,8 @@ class Chicken extends MovableObject {
     constructor(x, walkingImages, deadImage) {
         super();
         this.x = x;
-        this.walkingImages = walkingImages || Chicken.DEFAULT_WALKING_IMAGES;
-        this.deadImage = deadImage || Chicken.DEFAULT_DEAD_IMAGE;
+        this.walkingImages = walkingImages || CHICKEN_WALKING_IMAGES;
+        this.deadImage = deadImage || CHICKEN_DEAD_IMAGE;
         this.speed = 0.15 + Math.random() * 0.25;
         this.loadImage(this.walkingImages[0]);
         this.loadImages(this.walkingImages);

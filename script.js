@@ -8,6 +8,50 @@ let keyboard = new Keyboard();
  */
 function init() {
     canvas = document.getElementById("canvas");
+    initTouchControls();
+}
+
+/**
+ * Wires up the on-screen touch buttons so pressing one sets the same
+ * keyboard state as the matching physical key, and releasing it clears
+ * that state again. Pointer events cover touch, mouse and pen in one go.
+ */
+function initTouchControls() {
+    document.querySelectorAll(".touch-btn").forEach((button) => {
+        let key = button.dataset.key;
+        button.addEventListener("pointerdown", (event) => {
+            event.preventDefault();
+            keyboard[key] = true;
+        });
+        button.addEventListener("pointerup", () => (keyboard[key] = false));
+        button.addEventListener("pointerleave", () => (keyboard[key] = false));
+        button.addEventListener("pointercancel", () => (keyboard[key] = false));
+        button.addEventListener("contextmenu", (event) => event.preventDefault());
+    });
+}
+
+/**
+ * Toggles fullscreen mode for the whole game area.
+ * Called directly from the fullscreen button's onclick attribute.
+ */
+function toggleFullscreen() {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        document.querySelector(".game-container").requestFullscreen();
+    }
+}
+
+/**
+ * Swaps the fullscreen button's icon and label to match the current state.
+ * Runs on the browser's own "fullscreenchange" event, so it also catches
+ * the user leaving fullscreen with Escape instead of the button itself.
+ */
+function updateFullscreenButton() {
+    let button = document.getElementById("fullscreen-btn");
+    let isFullscreen = !!document.fullscreenElement;
+    button.innerHTML = isFullscreen ? "&#10529;" : "&#10530;";
+    button.title = isFullscreen ? "Vollbild verlassen" : "Vollbild";
 }
 
 /**
@@ -71,6 +115,22 @@ function closeControls() {
 }
 
 /**
+ * Opens the dialog that explains the story behind the game.
+ * Called directly from the "Story" button's onclick attribute.
+ */
+function openStory() {
+    document.getElementById("story-dialog").showModal();
+}
+
+/**
+ * Closes the story dialog.
+ * Called directly from the dialog's close button.
+ */
+function closeStory() {
+    document.getElementById("story-dialog").close();
+}
+
+/**
  * Closes the dialog when the click lands on the backdrop itself,
  * i.e. next to the dialog content, not inside it.
  * @param {MouseEvent} event - The click event from the dialog element.
@@ -114,3 +174,4 @@ function handleKeyUp(event) {
 window.addEventListener("load", init);
 window.addEventListener("keydown", handleKeyDown);
 window.addEventListener("keyup", handleKeyUp);
+document.addEventListener("fullscreenchange", updateFullscreenButton);

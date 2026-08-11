@@ -8,12 +8,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="orientation-warning">
+        <div class="rotate-icon">&#128241;</div>
+        <h2>Bitte drehe dein Gerät</h2>
+        <p>El Pollo Loco kann nur im Querformat gespielt werden.</p>
+    </div>
+
     <div class="game-container">
+        <button id="fullscreen-btn" class="icon-btn" onclick="toggleFullscreen()" aria-label="Vollbild" title="Vollbild">&#10530;</button>
         <div id="start-screen" class="screen">
             <img src="img/9_intro_outro_screens/start/startscreen_1.png" alt="El Pollo Loco" class="screen-bg">
             <div class="start-actions">
                 <button id="start-btn" class="game-btn" onclick="startGame()">Start Game</button>
                 <button id="controls-btn" class="game-btn game-btn-secondary" onclick="openControls()">Steuerung</button>
+                <button id="story-btn" class="game-btn game-btn-secondary" onclick="openStory()">Story</button>
             </div>
         </div>
         <div id="end-screen" class="screen end-screen hidden">
@@ -24,7 +32,19 @@
             </div>
         </div>
         <canvas id="canvas" width="1220" height="480"></canvas>
+        <div id="touch-controls">
+            <div class="touch-controls-side touch-controls-left">
+                <button class="touch-btn" data-key="left" aria-label="Links">&#9664;</button>
+                <button class="touch-btn" data-key="right" aria-label="Rechts">&#9654;</button>
+            </div>
+            <div class="touch-controls-side touch-controls-right">
+                <button class="touch-btn" data-key="throw" aria-label="Werfen">&#127866;</button>
+                <button class="touch-btn" data-key="up" aria-label="Springen">&#9650;</button>
+            </div>
+        </div>
     </div>
+
+    <a href="impressum.html" class="impressum-link">Impressum</a>
 
     <dialog id="controls-dialog" class="controls-dialog" onclick="handleDialogBackdropClick(event)">
         <button class="dialog-close" onclick="closeControls()">&times;</button>
@@ -34,6 +54,17 @@
             <li><span class="key">&uarr; / Leertaste</span> Springen</li>
             <li><span class="key">D</span> Flasche werfen</li>
         </ul>
+    </dialog>
+
+    <dialog id="story-dialog" class="controls-dialog story-dialog" onclick="handleDialogBackdropClick(event)">
+        <button class="dialog-close" onclick="closeStory()">&times;</button>
+        <h2>Die Geschichte</h2>
+        <p>
+            Pepes Dorf wurde von einer Horde wild gewordener Hühner überrannt, angeführt
+            von der gefürchteten Señora Gallina. Bewaffnet mit nichts als seinem Mut und
+            ein paar Flaschen scharfer Salsa macht sich Pepe auf, sein Dorf zurückzuerobern
+            und die Hühner zurück in die Wüste zu jagen.
+        </p>
     </dialog>
 
     <script src="classes/keyboard.class.js"></script>
@@ -48,8 +79,9 @@
     <script src="classes/throwable-object.class.js"></script>
     <script src="classes/status-bar.class.js"></script>
     <script src="classes/endboss.class.js"></script>
+    <script src="classes/collision-manager.class.js"></script>
     <script src="levels/level1.js"></script>
     <script src="classes/world.class.js"></script>
-    <script src="js/script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

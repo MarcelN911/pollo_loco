@@ -133,17 +133,31 @@ class Character extends MovableObject {
             return;
         }
         this.updateActivityTimestamp();
+        this.handleWalkInput();
+        this.handleJumpInput();
+        this.tryThrowBottle();
+    }
+
+    /**
+     * Moves the character left or right based on the currently pressed keys.
+     */
+    handleWalkInput() {
         if (this.world.keyboard.right) {
             this.moveRight();
         }
         if (this.world.keyboard.left && this.x > 0) {
             this.moveLeft();
         }
+    }
+
+    /**
+     * Starts a jump if the jump key is pressed and the character is grounded.
+     */
+    handleJumpInput() {
         let wantsToJump = this.world.keyboard.space || this.world.keyboard.up;
         if (wantsToJump && !this.isAboveGround()) {
             this.jump();
         }
-        this.tryThrowBottle();
     }
 
     /**
@@ -211,7 +225,17 @@ class Character extends MovableObject {
     playCharacterAnimation() {
         if (this.isDead()) {
             this.playDeadAnimation();
-        } else if (this.isHurt()) {
+            return;
+        }
+        this.playAliveAnimation();
+    }
+
+    /**
+     * Picks the animation for every non-dead state: hurt, jumping,
+     * walking, sleeping or standing idle.
+     */
+    playAliveAnimation() {
+        if (this.isHurt()) {
             this.playAnimation(this.IMAGES_HURT);
         } else if (this.isAboveGround()) {
             this.playAnimation(this.IMAGES_JUMPING);

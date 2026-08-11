@@ -11,6 +11,9 @@ body {
     margin: 0;
     height: 100vh;
     background-color: #222;
+    background-image: url("img/5_background/complete_background.png");
+    background-size: cover;
+    background-position: center;
     font-family: "Boogaloo", sans-serif;
     color: white;
     overflow: hidden;
@@ -21,16 +24,15 @@ body {
     justify-content: center;
 }
 
-h1 {
-    margin: 10px 0;
-}
-
 .game-container {
     position: relative;
-    display: inline-block;
+    width: min(1226px, 96vw, calc(92vh * 1226 / 486));
+    aspect-ratio: 1226 / 486;
 }
 
 canvas {
+    width: 100%;
+    height: 100%;
     background-color: black;
     border: 3px solid white;
     display: block;
@@ -83,6 +85,8 @@ canvas {
     position: relative;
     z-index: 1;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 16px;
 }
 
@@ -147,17 +151,206 @@ canvas {
     border-radius: 6px;
 }
 
+.story-dialog {
+    max-width: 420px;
+}
+
+.story-dialog p {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.5;
+}
+
 .end-screen {
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 28px;
     padding-bottom: 0;
-    background: linear-gradient(180deg, #2b1a12 0%, #6b3a1f 100%);
+    background-image: url("img/5_background/complete_background.png");
+    background-size: cover;
+    background-position: center;
+}
+
+.end-screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(20, 10, 5, 0.35) 0%, rgba(20, 10, 5, 0.8) 100%);
 }
 
 .end-badge {
+    position: relative;
     max-width: 70%;
     max-height: 220px;
     object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+}
+
+#orientation-warning {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+    text-align: center;
+    background-color: #1b120b;
+    color: white;
+}
+
+#orientation-warning h2 {
+    margin: 0;
+    color: #ffb703;
+}
+
+#orientation-warning p {
+    margin: 0;
+    max-width: 320px;
+}
+
+.rotate-icon {
+    font-size: 60px;
+    animation: rotate-hint 1.6s ease-in-out infinite;
+}
+
+@keyframes rotate-hint {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(90deg);
+    }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    #orientation-warning {
+        display: flex;
+    }
+}
+
+#touch-controls {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+    #touch-controls {
+        display: block;
+    }
+}
+
+.touch-controls-side {
+    position: absolute;
+    bottom: 4%;
+    display: flex;
+    gap: 3vmin;
+    pointer-events: auto;
+}
+
+.touch-controls-left {
+    left: 3%;
+}
+
+.touch-controls-right {
+    right: 3%;
+}
+
+.touch-btn {
+    width: 11vmin;
+    height: 11vmin;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: rgba(0, 0, 0, 0.45);
+    color: white;
+    font-size: 4.5vmin;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+}
+
+.touch-btn:active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.icon-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 3;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.impressum-link {
+    position: fixed;
+    left: 12px;
+    bottom: 10px;
+    z-index: 3;
+    color: #aaa;
+    font-family: "Boogaloo", sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.impressum-link:hover {
+    color: white;
+}
+
+.legal-page {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    align-items: unset;
+    justify-content: unset;
+    background-image: none;
+}
+
+.legal-content {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+    line-height: 1.6;
+}
+
+.legal-content h1 {
+    color: #ffb703;
+}
+
+.legal-content h2 {
+    margin-top: 28px;
+    color: #ffb703;
+}
+
+.legal-back-btn {
+    display: inline-block;
+    margin-top: 32px;
+    text-decoration: none;
+}
+
+.icon-btn:hover {
+    background-color: rgba(0, 0, 0, 0.75);
 }

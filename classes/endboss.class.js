@@ -126,19 +126,25 @@ class Endboss extends MovableObject {
      * then returns to the normal walking speed.
      */
     startAttackCycle() {
-        this.attackIntervalId = setInterval(() => {
-            if (this.isDead() || this.state === "hurt") {
-                return;
+        this.attackIntervalId = setInterval(() => this.runAttackCharge(), 7000);
+    }
+
+    /**
+     * Switches the boss into a fast attack charge for 2 seconds, then
+     * returns to the normal walking speed, unless she died or got hurt.
+     */
+    runAttackCharge() {
+        if (this.isDead() || this.state === "hurt") {
+            return;
+        }
+        this.state = "attack";
+        this.speed = 2.5;
+        setTimeout(() => {
+            if (!this.isDead()) {
+                this.state = "walking";
+                this.speed = 0.8;
             }
-            this.state = "attack";
-            this.speed = 2.5;
-            setTimeout(() => {
-                if (!this.isDead()) {
-                    this.state = "walking";
-                    this.speed = 0.8;
-                }
-            }, 2000);
-        }, 7000);
+        }, 2000);
     }
 
     /**
@@ -183,6 +189,14 @@ class Endboss extends MovableObject {
             return;
         }
         this.state = "hurt";
+        this.scheduleRecoverFromHurt();
+    }
+
+    /**
+     * Switches the boss back to walking 700ms after getting hurt,
+     * unless she died in the meantime.
+     */
+    scheduleRecoverFromHurt() {
         setTimeout(() => {
             if (!this.isDead()) {
                 this.state = "walking";

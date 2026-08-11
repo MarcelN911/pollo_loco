@@ -41,6 +41,12 @@ class StatusBar extends MovableObject {
     getNearestStep(percentage) {
         let steps = [0, 20, 40, 60, 80, 100];
         let clamped = Math.max(0, Math.min(100, percentage));
-        return steps.reduce((closest, step) => (step <= clamped ? step : closest), 0);
+        let closest = 0;
+        for (let i = 0; i < steps.length; i++) {
+            if (steps[i] <= clamped) {
+                closest = steps[i];
+            }
+        }
+        return closest;
     }
 }

@@ -26,7 +26,10 @@ function createBackgroundSegment(index) {
 function buildBackgroundObjects() {
     let backgroundObjects = [];
     for (let i = 0; i < SEGMENT_COUNT; i++) {
-        backgroundObjects.push(...createBackgroundSegment(i));
+        let segment = createBackgroundSegment(i);
+        for (let j = 0; j < segment.length; j++) {
+            backgroundObjects.push(segment[j]);
+        }
     }
     return backgroundObjects;
 }

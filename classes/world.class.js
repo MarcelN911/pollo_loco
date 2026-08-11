@@ -30,6 +30,7 @@ class World {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.keyboard = keyboard;
+        this.collisionManager = new CollisionManager(this);
         this.createStatusBars();
         this.setWorld();
         this.bottleBar.setPercentage((this.character.bottles / this.maxBottles) * 100);
@@ -64,12 +65,8 @@ class World {
     run() {
         this.gameIntervalId = setInterval(() => {
             this.updateCamera();
-            this.checkEnemyCollisions();
-            this.checkBossCollisions();
-            this.checkItemCollisions();
-            this.checkThrowableCollisions();
+            this.collisionManager.checkAll();
             this.checkGameOutcome();
-            this.cleanupThrowables();
             this.healthBar.setPercentage(this.character.energy);
             this.endbossBar.setPercentage(this.endboss.energy);
         }, 1000 / 60);
@@ -133,131 +130,6 @@ class World {
     }
 
     /**
-     * Checks every living enemy for a collision with the character.
-     * Does nothing once the character has already died.
-     */
-    checkEnemyCollisions() {
-        if (this.character.isDead()) {
-            return;
-        }
-        this.enemies.forEach((enemy) => {
-            this.checkSingleEnemyCollision(enemy);
-        });
-    }
-
-    /**
-     * Reacts to a collision with one enemy: stomps it if the character
-     * landed on top of it, otherwise the character takes damage.
-     * @param {Chicken} enemy - The enemy to check against the character.
-     */
-    checkSingleEnemyCollision(enemy) {
-        if (enemy.isDead || !this.character.isColliding(enemy)) {
-            return;
-        }
-        if (this.isStomp(enemy)) {
-            this.handleStomp(enemy);
-        } else {
-            this.character.hit();
-        }
-    }
-
-    /**
-     * Decides whether the character is landing on top of the enemy
-     * instead of just bumping into it from the side.
-     * @param {Chicken} enemy - The enemy to check against.
-     * @returns {boolean} True if this counts as a stomp.
-     */
-    isStomp(enemy) {
-        let characterIsFalling = this.character.speedY < 0;
-        let characterFeet = this.character.y + this.character.height - this.character.offset.bottom;
-        let enemyTop = enemy.y + enemy.offset.top;
-        return characterIsFalling && characterFeet < enemyTop + 30;
-    }
-
-    /**
-     * Kills the enemy, gives the character a small bounce upwards
-     * and removes the enemy from the level after a short delay.
-     * @param {Chicken} enemy - The enemy that got stomped.
-     */
-    handleStomp(enemy) {
-        enemy.die();
-        this.character.speedY = 10;
-        this.removeEnemyAfterDelay(enemy);
-    }
-
-    /**
-     * Removes a dead enemy from the enemies array after a short delay,
-     * so its death animation stays visible for a moment first.
-     * @param {Chicken} enemy - The enemy to remove.
-     */
-    removeEnemyAfterDelay(enemy) {
-        setTimeout(() => {
-            let index = this.enemies.indexOf(enemy);
-            if (index > -1) {
-                this.enemies.splice(index, 1);
-            }
-            enemy.stop();
-        }, 1000);
-    }
-
-    /**
-     * Checks collisions between the character, the endboss and thrown bottles.
-     * Walking into the boss damages the character; a bottle hit damages the boss.
-     */
-    checkBossCollisions() {
-        if (this.endboss.isDead() || this.character.isDead()) {
-            return;
-        }
-        if (this.character.isColliding(this.endboss)) {
-            this.character.hit();
-        }
-        this.throwableObjects.forEach((bottle) => {
-            if (!bottle.hasSplashed && bottle.isColliding(this.endboss)) {
-                this.endboss.hit();
-                bottle.splash();
-            }
-        });
-    }
-
-    /**
-     * Checks whether the character touches a coin or a bottle
-     * lying on the ground and collects it if so.
-     */
-    checkItemCollisions() {
-        this.coins = this.coins.filter((coin) => !this.tryCollectCoin(coin));
-        this.bottles = this.bottles.filter((bottle) => !this.tryCollectBottle(bottle));
-    }
-
-    /**
-     * Collects a coin if the character touches it.
-     * @param {Coin} coin - The coin to check.
-     * @returns {boolean} True if the coin was collected.
-     */
-    tryCollectCoin(coin) {
-        if (!this.character.isColliding(coin)) {
-            return false;
-        }
-        coin.stop();
-        this.character.coins += 1;
-        this.coinBar.setPercentage((this.character.coins / this.maxCoins) * 100);
-        return true;
-    }
-
-    /**
-     * Collects a ground bottle if the character touches it.
-     * @param {Bottle} bottle - The bottle to check.
-     * @returns {boolean} True if the bottle was collected.
-     */
-    tryCollectBottle(bottle) {
-        if (!this.character.isColliding(bottle)) {
-            return false;
-        }
-        this.character.bottles += 1;
-        this.bottleBar.setPercentage((this.character.bottles / this.maxBottles) * 100);
-        return true;
-    }
-
-    /**
      * Spawns a thrown bottle in front of the character and removes
      * one bottle from the character's collected amount.
      * Called by the character when the throw key is pressed.
@@ -272,45 +144,6 @@ class World {
     }
 
     /**
-     * Checks whether any thrown bottle in the air hits a living enemy.
-     */
-    checkThrowableCollisions() {
-        this.throwableObjects.forEach((bottle) => {
-            this.enemies.forEach((enemy) => {
-                this.checkSingleThrowableHit(bottle, enemy);
-            });
-        });
-    }
-
-    /**
-     * Kills the enemy and lets the bottle splash if they touch.
-     * @param {ThrowableObject} bottle - The thrown bottle to check.
-     * @param {Chicken} enemy - The enemy to check against.
-     */
-    checkSingleThrowableHit(bottle, enemy) {
-        if (enemy.isDead || bottle.hasSplashed || !bottle.isColliding(enemy)) {
-            return;
-        }
-        enemy.die();
-        bottle.splash();
-        this.removeEnemyAfterDelay(enemy);
-    }
-
-    /**
-     * Removes thrown bottles from the array once their splash
-     * animation has finished playing.
-     */
-    cleanupThrowables() {
-        this.throwableObjects = this.throwableObjects.filter((bottle) => {
-            let isFinished = bottle.hasSplashed && bottle.currentImage > bottle.IMAGES_SPLASH.length;
-            if (isFinished) {
-                bottle.stop();
-            }
-            return !isFinished;
-        });
-    }
-
-    /**
      * Clears the canvas and draws every layer in the correct order:
      * background, items and enemies in the world, the character on top,
      * and finally the status bars that always stay fixed on screen.
@@ -320,6 +153,16 @@ class World {
             return;
         }
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawWorldObjects();
+        this.drawStatusBars();
+        this.scheduleNextFrame();
+    }
+
+    /**
+     * Draws every object that lives inside the level and therefore moves
+     * with the camera: background, items, enemies, the boss and the character.
+     */
+    drawWorldObjects() {
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToMap(this.backgroundObjects);
         this.addObjectsToMap(this.clouds);
@@ -330,8 +173,12 @@ class World {
         this.addToMap(this.endboss);
         this.addToMap(this.character);
         this.ctx.translate(-this.camera_x, 0);
-        this.drawStatusBars();
+    }
 
+    /**
+     * Schedules the next animation frame, keeping the draw loop going.
+     */
+    scheduleNextFrame() {
         let self = this;
         this.animationFrameId = requestAnimationFrame(function () {
             self.draw();
