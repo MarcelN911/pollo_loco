@@ -7,7 +7,7 @@ class Coin extends MovableObject {
     height = 80;
     offset = { top: 10, left: 10, right: 10, bottom: 10 };
 
-    IMAGES_COIN = ["img/8_coin/coin_1.png", "img/8_coin/coin_2.png"];
+    IMAGES_COIN = ["assets/img/8_coin/coin_1.png", "assets/img/8_coin/coin_2.png"];
 
     /**
      * @param {number} x - Horizontal position inside the level.

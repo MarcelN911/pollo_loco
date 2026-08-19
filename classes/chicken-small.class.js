@@ -13,11 +13,11 @@ class ChickenSmall extends Chicken {
      */
     constructor(x) {
         let walkingImages = [
-            "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
-            "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
-            "img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
+            "assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
+            "assets/img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
+            "assets/img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
         ];
-        let deadImage = "img/3_enemies_chicken/chicken_small/2_dead/dead.png";
+        let deadImage = "assets/img/3_enemies_chicken/chicken_small/2_dead/dead.png";
         super(x, walkingImages, deadImage);
         this.speed = 0.3 + Math.random() * 0.3;
     }

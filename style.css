@@ -1,6 +1,6 @@
 @font-face {
     font-family: "Boogaloo";
-    src: url("fonts/Boogaloo-Regular.ttf");
+    src: url("assets/fonts/Boogaloo-Regular.ttf");
 }
 
 * {
@@ -11,7 +11,7 @@ body {
     margin: 0;
     height: 100vh;
     background-color: #222;
-    background-image: url("img/5_background/complete_background.png");
+    background-image: url("assets/img/5_background/complete_background.png");
     background-size: cover;
     background-position: center;
     font-family: "Boogaloo", sans-serif;
@@ -167,7 +167,7 @@ canvas {
     justify-content: center;
     gap: 28px;
     padding-bottom: 0;
-    background-image: url("img/5_background/complete_background.png");
+    background-image: url("assets/img/5_background/complete_background.png");
     background-size: cover;
     background-position: center;
 }
@@ -300,6 +300,10 @@ canvas {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+
+.icon-btn-mute {
+    right: 52px;
 }
 
 .impressum-link {

@@ -1,6 +1,7 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
+let soundManager = new SoundManager();
 
 /**
  * Runs once the page has loaded and just grabs the canvas element.
@@ -9,6 +10,25 @@ let keyboard = new Keyboard();
 function init() {
     canvas = document.getElementById("canvas");
     initTouchControls();
+    updateMuteButton();
+}
+
+/**
+ * Toggles muted sound on or off and updates the mute button's icon.
+ * Called directly from the mute button's onclick attribute.
+ */
+function toggleMute() {
+    soundManager.toggleMute();
+    updateMuteButton();
+}
+
+/**
+ * Swaps the mute button's icon to match the current mute state.
+ */
+function updateMuteButton() {
+    let button = document.getElementById("mute-btn");
+    button.innerHTML = soundManager.isMuted ? "&#128263;" : "&#128266;";
+    button.title = soundManager.isMuted ? "Ton an" : "Stummschalten";
 }
 
 /**
@@ -61,8 +81,9 @@ function updateFullscreenButton() {
  */
 function startGame() {
     document.getElementById("start-screen").classList.add("hidden");
-    world = new World(canvas, keyboard);
+    world = new World(canvas, keyboard, soundManager);
     world.onGameEnd = showEndScreen;
+    soundManager.startBackgroundMusic();
 }
 
 /**
@@ -72,7 +93,7 @@ function startGame() {
  */
 function showEndScreen(won) {
     let badge = document.getElementById("end-badge");
-    badge.src = won ? "img/You won, you lost/You won A.png" : "img/You won, you lost/You lost.png";
+    badge.src = won ? "assets/img/You won, you lost/You won A.png" : "assets/img/You won, you lost/You lost.png";
     badge.alt = won ? "Gewonnen" : "Verloren";
     document.getElementById("end-screen").classList.remove("hidden");
 }
@@ -85,8 +106,9 @@ function showEndScreen(won) {
 function restartGame() {
     document.getElementById("end-screen").classList.add("hidden");
     keyboard = new Keyboard();
-    world = new World(canvas, keyboard);
+    world = new World(canvas, keyboard, soundManager);
     world.onGameEnd = showEndScreen;
+    soundManager.startBackgroundMusic();
 }
 
 /**

@@ -17,6 +17,7 @@ class World {
     canvas;
     ctx;
     keyboard;
+    soundManager;
     camera_x = 0;
     gameEnded = false;
     isDestroyed = false;
@@ -25,11 +26,13 @@ class World {
     /**
      * @param {HTMLCanvasElement} canvas - The canvas to draw on.
      * @param {Keyboard} keyboard - The keyboard state used by the character.
+     * @param {SoundManager} soundManager - Plays every sound and the music.
      */
-    constructor(canvas, keyboard) {
+    constructor(canvas, keyboard, soundManager) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.keyboard = keyboard;
+        this.soundManager = soundManager;
         this.collisionManager = new CollisionManager(this);
         this.createStatusBars();
         this.setWorld();
@@ -43,11 +46,11 @@ class World {
      * and the endboss bar in the top right corner.
      */
     createStatusBars() {
-        this.healthBar = new StatusBar("img/7_statusbars/1_statusbar/2_statusbar_health/green", 20, 10);
-        this.coinBar = new StatusBar("img/7_statusbars/1_statusbar/1_statusbar_coin/blue", 20, 55);
-        this.bottleBar = new StatusBar("img/7_statusbars/1_statusbar/3_statusbar_bottle/orange", 20, 100);
+        this.healthBar = new StatusBar("assets/img/7_statusbars/1_statusbar/2_statusbar_health/green", 20, 10);
+        this.coinBar = new StatusBar("assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue", 20, 55);
+        this.bottleBar = new StatusBar("assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/orange", 20, 100);
         let bossBarX = this.canvas.width - 170;
-        this.endbossBar = new StatusBar("img/7_statusbars/2_statusbar_endboss/green", bossBarX, 10, "green");
+        this.endbossBar = new StatusBar("assets/img/7_statusbars/2_statusbar_endboss/green", bossBarX, 10, "green");
     }
 
     /**
@@ -95,6 +98,11 @@ class World {
      */
     endGame(won) {
         this.gameEnded = true;
+        if (won) {
+            this.soundManager.playWin();
+        } else {
+            this.soundManager.playLose();
+        }
         setTimeout(() => {
             this.destroy();
             if (this.onGameEnd) {
@@ -110,6 +118,7 @@ class World {
      */
     destroy() {
         this.isDestroyed = true;
+        this.soundManager.pauseAllSounds();
         clearInterval(this.gameIntervalId);
         cancelAnimationFrame(this.animationFrameId);
         this.character.stop();
@@ -141,6 +150,7 @@ class World {
         let startY = this.character.y + 100;
         let bottle = new ThrowableObject(startX, startY, this.character.otherDirection);
         this.throwableObjects.push(bottle);
+        this.soundManager.playThrow();
     }
 
     /**

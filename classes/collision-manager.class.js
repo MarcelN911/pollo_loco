@@ -184,6 +184,7 @@ class CollisionManager {
         coin.stop();
         world.character.coins += 1;
         world.coinBar.setPercentage((world.character.coins / world.maxCoins) * 100);
+        world.soundManager.playCoin();
         return true;
     }
 
