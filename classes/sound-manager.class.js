@@ -28,19 +28,21 @@ class SoundManager {
      * Creates every Audio object used in the game.
      */
     createSounds() {
-        this.backgroundMusic = this.createAudio("assets/audio/background_music.wav", true, 0.3);
-        this.jumpSound = this.createAudio("assets/audio/jump.wav", false, 0.6);
-        this.hurtSound = this.createAudio("assets/audio/hurt_character.wav", false, 0.6);
-        this.sleepingSound = this.createAudio("assets/audio/sleeping.wav", true, 0.4);
-        this.coinSound = this.createAudio("assets/audio/coin_pickup.wav", false, 0.6);
-        this.throwSound = this.createAudio("assets/audio/bottle.wav", false, 0.6);
-        this.bossHurtSound = this.createAudio("assets/audio/hurt_boss.wav", false, 0.6);
-        this.winSound = this.createAudio("assets/audio/win.wav", false, 0.7);
-        this.loseSound = this.createAudio("assets/audio/lose.wav", false, 0.7);
+        this.backgroundMusic = this.createAudio("assets/audio/background_music.m4a", true, 0.3);
+        this.jumpSound = this.createAudio("assets/audio/jump.m4a", false, 0.6);
+        this.hurtSound = this.createAudio("assets/audio/hurt_character.m4a", false, 0.6);
+        this.sleepingSound = this.createAudio("assets/audio/sleeping.m4a", true, 0.4);
+        this.coinSound = this.createAudio("assets/audio/coin_pickup.m4a", false, 0.6);
+        this.throwSound = this.createAudio("assets/audio/bottle.m4a", false, 0.6);
+        this.bossHurtSound = this.createAudio("assets/audio/hurt_boss.m4a", false, 0.6);
+        this.winSound = this.createAudio("assets/audio/win.m4a", false, 0.7);
+        this.loseSound = this.createAudio("assets/audio/lose.m4a", false, 0.7);
     }
 
     /**
      * Creates one Audio object with the given loop and volume settings.
+     * Loading is deferred (preload "none"), so the file is only fetched
+     * once it is actually played, keeping the initial page load small.
      * @param {string} path - Path to the audio file.
      * @param {boolean} loop - Whether the sound should loop.
      * @param {number} volume - Volume from 0 to 1.
@@ -50,6 +52,7 @@ class SoundManager {
         let audio = new Audio(path);
         audio.loop = loop;
         audio.volume = volume;
+        audio.preload = "none";
         return audio;
     }
 
