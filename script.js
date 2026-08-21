@@ -81,13 +81,16 @@ function updateFullscreenButton() {
  */
 function startGame() {
     document.getElementById("start-screen").classList.add("hidden");
+    document.getElementById("pause-btn").classList.remove("hidden");
+    resetPauseButton();
     world = new World(canvas, keyboard, soundManager);
     world.onGameEnd = showEndScreen;
     soundManager.startBackgroundMusic();
 }
 
 /**
- * Shows the end screen with the matching win or lose graphic.
+ * Shows the end screen with the matching win or lose graphic and hides
+ * the pause button, since there is no running game to pause anymore.
  * Called by World itself once the character or the endboss has died.
  * @param {boolean} won - True if the player defeated the endboss.
  */
@@ -96,6 +99,7 @@ function showEndScreen(won) {
     badge.src = won ? "assets/img/You won, you lost/You won A.png" : "assets/img/You won, you lost/You lost.png";
     badge.alt = won ? "Gewonnen" : "Verloren";
     document.getElementById("end-screen").classList.remove("hidden");
+    document.getElementById("pause-btn").classList.add("hidden");
 }
 
 /**
@@ -105,10 +109,77 @@ function showEndScreen(won) {
  */
 function restartGame() {
     document.getElementById("end-screen").classList.add("hidden");
+    document.getElementById("pause-btn").classList.remove("hidden");
+    resetPauseButton();
     keyboard = new Keyboard();
     world = new World(canvas, keyboard, soundManager);
     world.onGameEnd = showEndScreen;
     soundManager.startBackgroundMusic();
+}
+
+/**
+ * Pauses or resumes the game. Called by the pause button and by
+ * pressing "P". Does nothing if there is no running game right now.
+ */
+function togglePause() {
+    if (!world || world.gameEnded || world.isDestroyed) {
+        return;
+    }
+    if (world.isPaused) {
+        resumeGame();
+    } else {
+        pauseGame();
+    }
+}
+
+/**
+ * Pauses the game and shows the pause screen.
+ */
+function pauseGame() {
+    world.pauseGame();
+    document.getElementById("pause-screen").classList.remove("hidden");
+    updatePauseButton();
+}
+
+/**
+ * Hides the pause screen and resumes the game.
+ * Called directly from the pause screen's "Weiter spielen" button.
+ */
+function resumeGame() {
+    document.getElementById("pause-screen").classList.add("hidden");
+    world.resumeGame();
+    updatePauseButton();
+}
+
+/**
+ * Swaps the pause button's icon to match the current pause state.
+ */
+function updatePauseButton() {
+    let button = document.getElementById("pause-btn");
+    button.innerHTML = world.isPaused ? "&#9654;" : "&#9208;";
+    button.title = world.isPaused ? "Weiter spielen" : "Pause";
+}
+
+/**
+ * Resets the pause button back to its default "paused" icon.
+ * Called whenever a fresh game starts, in case it was left showing
+ * the "resume" icon from a previous game that was paused.
+ */
+function resetPauseButton() {
+    let button = document.getElementById("pause-btn");
+    button.innerHTML = "&#9208;";
+    button.title = "Pause";
+}
+
+/**
+ * Leaves a paused game for good and shows the start screen again.
+ * Called directly from the pause screen's "Zum Hauptmenü" button.
+ */
+function goHomeFromPause() {
+    world.destroy();
+    document.getElementById("pause-screen").classList.add("hidden");
+    document.getElementById("pause-btn").classList.add("hidden");
+    document.getElementById("start-screen").classList.remove("hidden");
 }
 
 /**
@@ -178,10 +249,30 @@ function setKeyboardState(key, isPressed) {
 }
 
 /**
+ * Tells us whether the given key is used to control the game.
+ * Used to stop the browser from doing anything else with that key,
+ * like scrolling the page or clicking a button that still has focus.
+ * @param {string} key - The value of event.key.
+ * @returns {boolean} True if this key controls the game.
+ */
+function isGameControlKey(key) {
+    let arrowKey = key === "ArrowLeft" || key === "ArrowRight" || key === "ArrowUp" || key === "ArrowDown";
+    let otherControlKey = key === " " || key === "d" || key === "D";
+    return arrowKey || otherControlKey;
+}
+
+/**
  * Handles the keydown event and marks the matching key as pressed.
+ * Also opens or closes the pause screen when "P" is pressed.
  * @param {KeyboardEvent} event - The native keydown event.
  */
 function handleKeyDown(event) {
+    if (isGameControlKey(event.key)) {
+        event.preventDefault();
+    }
+    if (event.key === "p" || event.key === "P") {
+        togglePause();
+    }
     setKeyboardState(event.key, true);
 }
 

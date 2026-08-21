@@ -21,6 +21,7 @@ class World {
     camera_x = 0;
     gameEnded = false;
     isDestroyed = false;
+    isPaused = false;
     onGameEnd = null;
 
     /**
@@ -127,6 +128,60 @@ class World {
         this.clouds.forEach((cloud) => cloud.stop());
         this.coins.forEach((coin) => coin.stop());
         this.throwableObjects.forEach((bottle) => bottle.stop());
+    }
+
+    /**
+     * Pauses every moving part of the game: the main game loop, the draw
+     * loop, every object's own movement/animation loops, and the sounds
+     * that go with them. Called when the player opens the pause screen.
+     */
+    pauseGame() {
+        this.isPaused = true;
+        clearInterval(this.gameIntervalId);
+        cancelAnimationFrame(this.animationFrameId);
+        this.character.stop();
+        this.endboss.stop();
+        this.enemies.forEach((enemy) => enemy.stop());
+        this.clouds.forEach((cloud) => cloud.stop());
+        this.coins.forEach((coin) => coin.stop());
+        this.throwableObjects.forEach((bottle) => bottle.stop());
+        this.soundManager.pauseAllSounds();
+    }
+
+    /**
+     * Resumes the game after it was paused: restarts every loop and
+     * the sounds that go with them.
+     */
+    resumeGame() {
+        this.isPaused = false;
+        this.resumeAllObjects();
+        this.run();
+        this.draw();
+        this.resumeSounds();
+    }
+
+    /**
+     * Restarts the movement and animation loops of every object in the level.
+     */
+    resumeAllObjects() {
+        this.character.animate();
+        this.endboss.animate();
+        this.endboss.resumeAttackCycle();
+        this.enemies.forEach((enemy) => enemy.animate());
+        this.clouds.forEach((cloud) => cloud.animate());
+        this.coins.forEach((coin) => coin.animate());
+        this.throwableObjects.forEach((bottle) => bottle.animate());
+    }
+
+    /**
+     * Resumes the background music, and the snoring sound too if the
+     * character was already asleep when the game got paused.
+     */
+    resumeSounds() {
+        this.soundManager.startBackgroundMusic();
+        if (this.character.isSleeping) {
+            this.soundManager.startSnoring();
+        }
     }
 
     /**

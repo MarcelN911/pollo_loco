@@ -50,8 +50,8 @@ canvas {
     border: 3px solid white;
 }
 
-.screen.hidden {
-    display: none;
+.hidden {
+    display: none !important;
 }
 
 .screen-bg {
@@ -304,6 +304,27 @@ canvas {
 
 .icon-btn-mute {
     right: 52px;
+}
+
+.icon-btn-pause {
+    right: 96px;
+}
+
+.pause-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.pause-screen h2 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 40px;
+    color: #ffb703;
 }
 
 .impressum-link {

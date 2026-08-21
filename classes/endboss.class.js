@@ -148,6 +148,18 @@ class Endboss extends MovableObject {
     }
 
     /**
+     * Restarts the periodic attack cycle after the game was paused,
+     * but only if the boss was already active and past the alert phase.
+     */
+    resumeAttackCycle() {
+        let shouldResume = this.isActivated && this.state !== "alert" && !this.isDead();
+        if (shouldResume) {
+            clearInterval(this.attackIntervalId);
+            this.startAttackCycle();
+        }
+    }
+
+    /**
      * Moves the boss to the left when active, but only while walking or attacking.
      */
     move() {
