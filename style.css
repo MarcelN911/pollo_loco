@@ -161,6 +161,28 @@ canvas {
     line-height: 1.5;
 }
 
+.impressum-dialog {
+    max-width: 460px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.impressum-dialog h3 {
+    margin: 18px 0 8px;
+    color: #ffb703;
+    font-size: 20px;
+}
+
+.impressum-dialog h3:first-of-type {
+    margin-top: 0;
+}
+
+.impressum-dialog p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
 .end-screen {
     flex-direction: column;
     align-items: center;
@@ -332,15 +354,20 @@ canvas {
     left: 12px;
     bottom: 10px;
     z-index: 3;
-    color: #aaa;
+    background-color: rgba(0, 0, 0, 0.55);
+    border: 2px solid #ffb703;
+    border-radius: 20px;
+    padding: 6px 16px;
+    color: #ffb703;
     font-family: "Boogaloo", sans-serif;
-    font-size: 15px;
+    font-size: 18px;
     letter-spacing: 0.5px;
     text-decoration: none;
     cursor: pointer;
 }
 
 .impressum-link:hover {
+    background-color: rgba(0, 0, 0, 0.75);
     color: white;
 }
 

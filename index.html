@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <a href="impressum.html" class="impressum-link">Impressum</a>
+    <button id="impressum-link" class="impressum-link" onclick="openImpressum()">Impressum</button>
 
     <dialog id="controls-dialog" class="controls-dialog" onclick="handleDialogBackdropClick(event)">
         <button class="dialog-close" onclick="closeControls()">&times;</button>
@@ -73,6 +73,29 @@
             von der gefürchteten Señora Gallina. Bewaffnet mit nichts als seinem Mut und
             ein paar Flaschen scharfer Salsa macht sich Pepe auf, sein Dorf zurückzuerobern
             und die Hühner zurück in die Wüste zu jagen.
+        </p>
+    </dialog>
+
+    <dialog id="impressum-dialog" class="controls-dialog impressum-dialog" onclick="handleDialogBackdropClick(event)">
+        <button class="dialog-close" onclick="closeImpressum()">&times;</button>
+        <h2>Impressum</h2>
+        <h3>Angaben gemäß § 5 TMG</h3>
+        <p>
+            Max Mustermann<br>
+            Musterstraße 12<br>
+            12345 Musterstadt<br>
+            Deutschland
+        </p>
+        <h3>Kontakt</h3>
+        <p>
+            Telefon: 0123 456789<br>
+            E-Mail: kontakt@el-pollo-loco-beispiel.de
+        </p>
+        <h3>Haftungshinweis</h3>
+        <p>
+            Dieses Projekt ist ein privates Lernprojekt im Rahmen einer Programmierausbildung
+            und dient ausschließlich zu Demonstrationszwecken. Es werden keine echten Dienstleistungen
+            angeboten. Alle Angaben auf dieser Seite sind Platzhalterdaten.
         </p>
     </dialog>
 

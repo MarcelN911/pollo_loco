@@ -224,6 +224,22 @@ function closeStory() {
 }
 
 /**
+ * Opens the dialog that shows the Impressum (legal notice).
+ * Called directly from the "Impressum" button's onclick attribute.
+ */
+function openImpressum() {
+    document.getElementById("impressum-dialog").showModal();
+}
+
+/**
+ * Closes the Impressum dialog.
+ * Called directly from the dialog's close button.
+ */
+function closeImpressum() {
+    document.getElementById("impressum-dialog").close();
+}
+
+/**
  * Closes the dialog when the click lands on the backdrop itself,
  * i.e. next to the dialog content, not inside it.
  * @param {MouseEvent} event - The click event from the dialog element.
