@@ -44,13 +44,13 @@ class World {
 
     /**
      * Creates the three fixed status bars shown in the top left corner
-     * and the endboss bar in the top right corner.
+     * and the endboss bar centered at the top.
      */
     createStatusBars() {
         this.healthBar = new StatusBar("assets/img/7_statusbars/1_statusbar/2_statusbar_health/green", 20, 10);
         this.coinBar = new StatusBar("assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue", 20, 55);
         this.bottleBar = new StatusBar("assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/orange", 20, 100);
-        let bossBarX = this.canvas.width - 170;
+        let bossBarX = (this.canvas.width - 150) / 2;
         this.endbossBar = new StatusBar("assets/img/7_statusbars/2_statusbar_endboss/green", bossBarX, 10, "green");
     }
 
@@ -72,7 +72,7 @@ class World {
             this.collisionManager.checkAll();
             this.checkGameOutcome();
             this.healthBar.setPercentage(this.character.energy);
-            this.endbossBar.setPercentage(this.endboss.energy);
+            this.endbossBar.setPercentage((this.endboss.energy / this.endboss.maxEnergy) * 100);
         }, 1000 / 60);
     }
 

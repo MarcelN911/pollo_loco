@@ -186,11 +186,11 @@ class Character extends MovableObject {
 
     /**
      * Throws a bottle if the throw key is pressed, the character still
-     * has bottles left, and the short cooldown since the last throw is over.
+     * has bottles left, and the cooldown since the last throw is over.
      */
     tryThrowBottle() {
         let now = new Date().getTime();
-        let cooldownPassed = now - this.lastThrow > 400;
+        let cooldownPassed = now - this.lastThrow > 1000;
         let canThrow = this.world.keyboard.throw && this.bottles > 0 && cooldownPassed;
         if (canThrow) {
             this.world.throwBottle();
@@ -328,14 +328,16 @@ class Character extends MovableObject {
     /**
      * Reduces the character's energy after being hit by an enemy.
      * A short cooldown prevents losing energy multiple times for what
-     * is really just one single touch. The damage matches exactly one
-     * step of the status bar, so every hit is immediately visible.
+     * is really just one single touch.
+     * @param {number} [amount] - Energy to subtract. Defaults to one
+     * step of the status bar; callers can pass a higher value for
+     * enemies that should hit harder, like the endboss.
      */
-    hit() {
+    hit(amount = 20) {
         let now = new Date().getTime();
         let cooldownPassed = now - this.lastHit > 1000;
         if (cooldownPassed) {
-            this.energy = Math.max(this.energy - 20, 0);
+            this.energy = Math.max(this.energy - amount, 0);
             this.lastHit = now;
             this.wakeUpIfNeeded();
             this.world.soundManager.playHurt();

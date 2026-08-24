@@ -3,15 +3,28 @@
  * She wakes up when the character gets close, then alternates between
  * walking toward him and launching attack charges.
  * A bottle hit reduces her health by one step; five hits kill her.
+ * Once she drops below half health she enters an enraged phase, becoming
+ * faster and attacking more often for the rest of the fight.
  */
 class Endboss extends MovableObject {
     width = 200;
     height = 230;
     y = 190;
-    speed = 0.8;
+    baseSpeed = 1.8;
+    enrageSpeed = 2.5;
+    attackSpeed = 4.5;
+    enrageAttackSpeed = 5.5;
+    attackInterval = 4500;
+    enrageAttackInterval = 3000;
+    overshootDistance = 100;
+    speed = this.baseSpeed;
+    maxEnergy = 100;
     energy = 100;
     state = "walking";
     isActivated = false;
+    isEnraged = false;
+    movingLeft = true;
+    pendingTurnX = null;
     world;
     offset = { top: 20, left: 20, right: 20, bottom: 20 };
 
@@ -100,7 +113,7 @@ class Endboss extends MovableObject {
      * Shows the alert animation before she starts moving.
      */
     checkActivation() {
-        let isClose = this.world.character.x > this.x - 600;
+        let isClose = this.world.character.x > this.x - 1000;
         if (!this.isActivated && isClose) {
             this.isActivated = true;
             this.startAlertPhase();
@@ -108,7 +121,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Plays the alert animation for 3 seconds, then switches to walking.
+     * Plays the alert animation briefly, then switches to walking.
      * Also starts the periodic attack cycle from this point on.
      */
     startAlertPhase() {
@@ -118,15 +131,17 @@ class Endboss extends MovableObject {
                 this.state = "walking";
                 this.startAttackCycle();
             }
-        }, 3000);
+        }, 1500);
     }
 
     /**
-     * Repeats every 7 seconds: switches to a fast attack charge for 2 seconds,
-     * then returns to the normal walking speed.
+     * Repeats every few seconds: switches to a fast attack charge for 2 seconds,
+     * then returns to the normal walking speed. The interval shortens once
+     * the boss is enraged.
      */
     startAttackCycle() {
-        this.attackIntervalId = setInterval(() => this.runAttackCharge(), 7000);
+        let interval = this.isEnraged ? this.enrageAttackInterval : this.attackInterval;
+        this.attackIntervalId = setInterval(() => this.runAttackCharge(), interval);
     }
 
     /**
@@ -138,11 +153,11 @@ class Endboss extends MovableObject {
             return;
         }
         this.state = "attack";
-        this.speed = 2.5;
+        this.speed = this.isEnraged ? this.enrageAttackSpeed : this.attackSpeed;
         setTimeout(() => {
             if (!this.isDead()) {
                 this.state = "walking";
-                this.speed = 0.8;
+                this.speed = this.isEnraged ? this.enrageSpeed : this.baseSpeed;
             }
         }, 2000);
     }
@@ -160,14 +175,75 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Moves the boss to the left when active, but only while walking or attacking.
+     * Moves the boss towards the character when active, but only while
+     * walking or attacking. Instead of turning on a dime the moment she
+     * reaches the character, she keeps running a bit further past him
+     * before turning around, like a charge that overshoots its target.
      */
     move() {
         let canMove = this.isActivated && (this.state === "walking" || this.state === "attack");
-        if (canMove) {
+        if (!canMove) {
+            return;
+        }
+        if (this.pendingTurnX === null) {
+            this.checkForOvershoot();
+        }
+        if (this.pendingTurnX !== null) {
+            this.walkUntilTurnPoint();
+        } else {
+            this.walkTowardsCharacter();
+        }
+    }
+
+    /**
+     * Detects the moment the character ends up behind the boss's current
+     * walking direction and schedules a turning point a bit further
+     * ahead, so she keeps running past him before turning around.
+     */
+    checkForOvershoot() {
+        let wantsLeft = this.world.character.x < this.x;
+        if (wantsLeft !== this.movingLeft) {
+            this.pendingTurnX = this.movingLeft
+                ? this.x - this.overshootDistance
+                : this.x + this.overshootDistance;
+        }
+    }
+
+    /**
+     * Keeps walking in the current direction until the scheduled turning
+     * point is reached, then clears it so the next frame turns around.
+     */
+    walkUntilTurnPoint() {
+        this.walk(this.movingLeft);
+        let reachedTurnPoint = this.movingLeft ? this.x <= this.pendingTurnX : this.x >= this.pendingTurnX;
+        if (reachedTurnPoint) {
+            this.pendingTurnX = null;
+            this.movingLeft = !this.movingLeft;
+        }
+    }
+
+    /**
+     * Walks straight towards the character's current position.
+     */
+    walkTowardsCharacter() {
+        let wantsLeft = this.world.character.x < this.x;
+        this.walk(wantsLeft);
+    }
+
+    /**
+     * Moves one step in the given direction and keeps the sprite facing
+     * that way.
+     * @param {boolean} toLeft - True to walk left, false to walk right.
+     */
+    walk(toLeft) {
+        if (toLeft) {
             this.moveLeft();
             this.otherDirection = false;
+        } else {
+            this.moveRight();
+            this.otherDirection = true;
         }
+        this.movingLeft = toLeft;
     }
 
     /**
@@ -201,8 +277,28 @@ class Endboss extends MovableObject {
             this.state = "dead";
             return;
         }
+        this.checkEnrage();
         this.state = "hurt";
         this.scheduleRecoverFromHurt();
+    }
+
+    /**
+     * Once the boss drops to half health, she permanently becomes faster
+     * and attacks more often for the rest of the fight.
+     */
+    checkEnrage() {
+        let isHalfHealth = this.energy <= this.maxEnergy / 2;
+        if (this.isEnraged || !isHalfHealth) {
+            return;
+        }
+        this.isEnraged = true;
+        if (this.state !== "attack") {
+            this.speed = this.enrageSpeed;
+        }
+        if (this.attackIntervalId) {
+            clearInterval(this.attackIntervalId);
+            this.startAttackCycle();
+        }
     }
 
     /**

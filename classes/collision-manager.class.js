@@ -109,11 +109,12 @@ class CollisionManager {
 
     /**
      * Damages the character if he walks directly into the endboss.
+     * The boss hits harder than a regular enemy.
      */
     checkCharacterVsBoss() {
         let world = this.world;
         if (world.character.isColliding(world.endboss)) {
-            world.character.hit();
+            world.character.hit(30);
         }
     }
 
