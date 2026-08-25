@@ -56,9 +56,17 @@ class MovableObject {
     /**
      * Switches the current image to the next frame of an animation.
      * Uses the modulo operator so the animation loops automatically.
+     * Resets to frame 0 whenever a different animation than the last
+     * call starts playing, so e.g. a fresh jump always starts at its
+     * first frame instead of continuing from wherever the frame
+     * counter happened to be when switching states quickly.
      * @param {string[]} paths - Array of image paths for this animation.
      */
     playAnimation(paths) {
+        if (this.lastAnimationPaths !== paths) {
+            this.currentImage = 0;
+            this.lastAnimationPaths = paths;
+        }
         let i = this.currentImage % paths.length;
         let path = paths[i];
         this.img = this.imageCache[path];

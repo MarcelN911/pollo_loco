@@ -75,19 +75,22 @@ function buildCoins() {
 }
 
 /**
- * Creates the five collectible bottles spread across the level.
- * All of them sit before the boss's activation range (she wakes up
- * 1000px before her position, at x 1800), so the player can always
+ * Creates the seven collectible bottles spread across the level, plenty
+ * for the five hits needed to kill the boss plus a buffer for missed
+ * throws. All of them sit before the boss's activation range (she wakes
+ * up 1000px before her position, at x 1800), so the player can always
  * collect the full reserve before the fight starts.
  * @returns {Bottle[]} The bottle objects of the level.
  */
 function buildBottles() {
     return [
         new Bottle(500, 360),
+        new Bottle(800, 360),
         new Bottle(1000, 360),
-        new Bottle(1350, 360),
-        new Bottle(1550, 360),
-        new Bottle(1700, 360),
+        new Bottle(1250, 360),
+        new Bottle(1450, 360),
+        new Bottle(1600, 360),
+        new Bottle(1730, 360),
     ];
 }
 

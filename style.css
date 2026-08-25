@@ -248,7 +248,7 @@ canvas {
     }
 }
 
-@media (max-width: 1024px) and (orientation: portrait) {
+@media (pointer: coarse) and (orientation: portrait) {
     #orientation-warning {
         display: flex;
     }
@@ -262,7 +262,7 @@ canvas {
     pointer-events: none;
 }
 
-@media (max-width: 1024px) and (orientation: landscape) {
+@media (pointer: coarse) and (orientation: landscape) {
     #touch-controls {
         display: block;
     }

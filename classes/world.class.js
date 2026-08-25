@@ -13,7 +13,7 @@ class World {
     bottles = buildBottles();
     throwableObjects = [];
     maxCoins = this.coins.length;
-    maxBottles = 7;
+    maxBottles = 9;
     canvas;
     ctx;
     keyboard;
