@@ -14,6 +14,7 @@ class Character extends MovableObject {
     coins = 0;
     bottles = 2;
     lastThrow = 0;
+    lastJump = 0;
     lastActivity = 0;
     isSleeping = false;
     deadAnimationFrame = 0;
@@ -153,10 +154,18 @@ class Character extends MovableObject {
 
     /**
      * Starts a jump if the jump key is pressed and the character is grounded.
+     * A short cooldown after the last jump prevents starting a new jump
+     * before the character has fully landed. Without it, rapid repeated
+     * key presses could retrigger a jump during the one-frame window where
+     * gravity briefly overshoots below ground level right before snapping
+     * back to y = 130, which cut the jump animation short and desynced
+     * the character's y position from the ground.
      */
     handleJumpInput() {
         let wantsToJump = this.world.keyboard.space || this.world.keyboard.up;
-        if (wantsToJump && !this.isAboveGround()) {
+        let now = new Date().getTime();
+        let cooldownPassed = now - this.lastJump > 500;
+        if (wantsToJump && !this.isAboveGround() && cooldownPassed) {
             this.jump();
         }
     }
@@ -204,6 +213,7 @@ class Character extends MovableObject {
      */
     jump() {
         this.speedY = 15;
+        this.lastJump = new Date().getTime();
         this.world.soundManager.playJump();
     }
 
