@@ -252,7 +252,7 @@ class Character extends MovableObject {
         if (this.isHurt()) {
             this.playAnimation(this.IMAGES_HURT);
         } else if (this.isAboveGround()) {
-            this.playAnimation(this.IMAGES_JUMPING);
+            this.playJumpAnimation();
         } else if (this.world.keyboard.right || this.world.keyboard.left) {
             this.playAnimation(this.IMAGES_WALKING);
         } else if (this.isLongIdle()) {
@@ -261,6 +261,24 @@ class Character extends MovableObject {
         } else {
             this.playAnimation(this.IMAGES_IDLE);
         }
+    }
+
+    /**
+     * Picks the jump animation frame directly from the current fall speed
+     * instead of the usual fixed 100ms timer. A jump only lasts around half
+     * a second, too short for the 9-frame sequence to fully play out at that
+     * rate, which made the peak "arms up" pose only appear right as the
+     * character was already landing. Since speedY goes from 15 at the start
+     * of the jump down to -15 at landing regardless of how long a frame
+     * takes, it acts as a precise progress value that keeps the animation
+     * in sync with the actual jump arc, whatever the interval timing.
+     */
+    playJumpAnimation() {
+        let progress = (15 - this.speedY) / 30;
+        progress = Math.min(Math.max(progress, 0), 1);
+        let lastFrame = this.IMAGES_JUMPING.length - 1;
+        let frame = Math.min(Math.floor(progress * this.IMAGES_JUMPING.length), lastFrame);
+        this.img = this.imageCache[this.IMAGES_JUMPING[frame]];
     }
 
     /**

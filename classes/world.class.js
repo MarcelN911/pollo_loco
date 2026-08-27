@@ -63,12 +63,11 @@ class World {
     }
 
     /**
-     * Starts the logic loop that moves the camera, checks every kind
-     * of collision and keeps the status bars in sync.
+     * Starts the logic loop that checks every kind of collision
+     * and keeps the status bars in sync.
      */
     run() {
         this.gameIntervalId = setInterval(() => {
-            this.updateCamera();
             this.collisionManager.checkAll();
             this.checkGameOutcome();
             this.healthBar.setPercentage(this.character.energy);
@@ -228,6 +227,7 @@ class World {
      * with the camera: background, items, enemies, the boss and the character.
      */
     drawWorldObjects() {
+        this.updateCamera();
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToMap(this.backgroundObjects);
         this.addObjectsToMap(this.clouds);
