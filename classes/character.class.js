@@ -109,6 +109,9 @@ class Character extends MovableObject {
         this.movementIntervalId = setInterval(() => {
             this.moveCharacter();
             this.applyGravity();
+            if (this.isAboveGround()) {
+                this.playJumpAnimation();
+            }
         }, 1000 / 60);
 
         this.animationIntervalId = setInterval(() => {
@@ -275,13 +278,13 @@ class Character extends MovableObject {
 
     /**
      * Picks the jump animation frame directly from the current fall speed
-     * instead of the usual fixed 100ms timer. A jump only lasts around half
-     * a second, too short for the 9-frame sequence to fully play out at that
-     * rate, which made the peak "arms up" pose only appear right as the
-     * character was already landing. Since speedY goes from 15 at the start
-     * of the jump down to -15 at landing regardless of how long a frame
-     * takes, it acts as a precise progress value that keeps the animation
-     * in sync with the actual jump arc, whatever the interval timing.
+     * instead of the usual fixed 100ms timer. speedY goes from 15 at the
+     * start of the jump down to -15 at landing regardless of how long a
+     * frame takes, so it acts as a precise progress value. It is called
+     * every movement tick (60fps) rather than every animation tick (100ms)
+     * because a jump lasts only ~500ms - at 100ms resolution there aren't
+     * enough samples to hit all 9 frames, so frames like the peak "arms up"
+     * pose would randomly get skipped depending on timer drift.
      */
     playJumpAnimation() {
         let progress = (15 - this.speedY) / 30;
